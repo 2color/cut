@@ -1,0 +1,10 @@
+Oct 25 05:50:39 2color.local Install OS X Mavericks[27673]: @(#)PROGRAM:Install  PROJECT:Install-735
+Oct 25 05:50:39 2color.local Install OS X Mavericks[27673]: Hardware: MacBookPro7,1 @ 2.40 GHz (x 2), 8192 MB RAM
+Oct 25 05:50:39 2color.local Install OS X Mavericks[27673]: Running OS Build: Mac OS X 10.8.4 (12E55)
+Oct 25 05:52:39 2color.local Install OS X Mavericks[27673]: Env: PATH=/usr/bin:/bin:/usr/sbin:/sbin
+Oct 25 05:52:39 2color.local Install OS X Mavericks[27673]: Env: TMPDIR=/var/folders/wd/5d835zlj1_315cp5xzlrs46h0000gn/T/
+Oct 25 05:55:39 2color.local Install OS X Mavericks[27673]: Env: SHELL=/bin/zsh
+Oct 25 05:55:39 2color.local Install OS X Mavericks[27673]: Env: HOME=/Users/danielnorman
+Oct 25 05:55:39 2color.local Install OS X Mavericks[27673]: Env: USER=danielnorma
+Oct 25 05:55:39 2color.local Install OS X Mavericks[27673]: Env: LOGNAME=danielnorma
+Oct 25 05:56:39 2color.local Install OS X Mavericks[27673]: Env: COM_GOOGLE_CHROME_FRAMEWORK_SERVICE_PROCESS/USERS/DANIELNORMAN/LIBRAR6
