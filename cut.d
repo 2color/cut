@@ -4,7 +4,11 @@ import std.conv;
 import std.file;
 import std.algorithm;
 
-
+/**
+ * Cut Class
+ *
+ * Class representing the complete Cut cli tool
+ */
 class Cut {
 
     /**
@@ -39,42 +43,56 @@ class Cut {
     /**
      * @var file the file to read
      */
-    string file;
+    private string file;
 
     /**
      * @var mode    cut mode
      */
-    CutMode mode;
+    private CutMode mode;
 
     /**
      * @var range   range of fields/bytes selected
      */
-    Range range;
+    private Range range;
 
     /**
-     * @var delimiter   the character used as delimiter.
+     * @var delimiter   the character used as delimiter. (defaults to tab)
      */
-    char delimiter = tab;
-    bool complement = false;
+    private char delimiter = tab;
 
+    /**
+     * @var complement   boolean for complement mode. (defaults to false)
+     */
+    private bool complement = false;
+
+
+    /**
+     * @constructor
+     * 
+     * @param   string[]    args    arguments as passed to the main function.
+     */
     this(string[] args) {
         parseOpts(args);
         this();
     }
 
 
-
+    /**
+     * @constructor
+     * 
+     * Function overloading without arguments for testing purposes
+     */
     this() {
         if (!exists(file)) {
             writefln("file %s doesn't exists", file);
             return;
         } else {
-            readFile();
+            cutFile();
         }
     }
 
 
-    void readFile() {
+    void cutFile() {
         auto f = File(file, "r");
         string output;
 
