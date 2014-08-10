@@ -85,7 +85,10 @@ class Cut {
      * Function overloading without arguments for testing purposes
      */
     this() {
-        if (!exists(file)) {
+        if (!file) {
+            return;
+        }
+        else if (!exists(file)) {
             writefln("file %s doesn't exists", file);
             return;
         } else {
@@ -101,11 +104,20 @@ class Cut {
         char[] buf;
 
         while (f.readln(buf)) {
-            //writeln(cutLine(buf.filter!(a => a != newLine)));
-            writeln(cutLine(buf.strip(' ')));
+            writeln(cutLine(buf.strip(newLine)));
         }
     }
 
+    /**
+     * Cut line 
+     *
+     * @TODO Merge the cutLineByFields an cutLineByBytes into one function
+     * and split for fields before the call.
+     *
+     * @param   char[]  line    a single line
+     *
+     * @return  char[]  the line after it's been cut
+     */
     auto cutLine(char[] line) {
         if (mode == CutMode.fields) {
             return cutLineByFields(line);
@@ -319,29 +331,30 @@ class Cut {
         assert(cut.ranges[cut.ranges.length - 1].from == 8 && cut.ranges[cut.ranges.length - 1].to == 8);
     }
 
-    // Unit test for cut lines by fields/bytes
-    //unittest {
-    //    auto cut = new Cut();
-    //    cut.ranges[0] = Range();
-    //    cut.ranges[0].from = 1;
-    //    cut.ranges[0].to = 5;
-    //    cut.delimiter = 0x20;
+    // Unit test for cut lines by fields/bytes and complement
+    unittest {
+        auto cut = new Cut();
+        cut.ranges ~= Range(1, 5);
+        cut.delimiter = 0x20;
 
-    //    char[] test1 = "col1 col2 col3 col4 col5 col6 col7 col8".dup;
+        char[] test1 = "col1 col2 col3 col4 col5 col6 col7 col8".dup;
 
-    //    assert(cut.cutLineByFields(test1) == "col1 col2 col3 col4 col5 ");
+        assert(cut.cutLineByFields(test1) == "col1 col2 col3 col4 col5 ");
 
-    //    cut.ranges.from = 1;
-    //    cut.ranges.to = uint.max;
+        cut.ranges[0].from = 1;
+        cut.ranges[0].to = uint.max;
 
-    //    assert(cut.cutLineByFields(test1) == "col1 col2 col3 col4 col5 col6 col7 col8 ");
+        assert(cut.cutLineByFields(test1) == "col1 col2 col3 col4 col5 col6 col7 col8 ");
 
 
-    //    cut.ranges.from = 1;
-    //    cut.ranges.to = 4;
+        cut.ranges[0].from = 1;
+        cut.ranges[0].to = 4;
 
-    //    assert(cut.cutLineByBytes(test1) == "col1");
-    //}
+        assert(cut.cutLineByBytes(test1) == "col1");
+
+        cut.complement = true;
+        assert(cut.cutLineByBytes(test1) == " col2 col3 col4 col5 col6 col7 col8");
+    }
 
 }
 
