@@ -229,9 +229,9 @@ class Cut {
 
 
     /**
-     * Parse Range
+     * Parse Ranges
      *
-     * Parses a range string and updates the range data structure
+     * Parses a ranges string and append the range data structure
      *
      * @param   input   string      the string entered by the user
      *
@@ -242,28 +242,33 @@ class Cut {
         bool hasHyphen = false;
 
         foreach (string range;ranges) {
-            if (isNumeric(range) && indexOf(range, hyphen) == -1) {
-                // parse the range as a single field
-                uint field = to!uint(range);
-                this.ranges ~= Range(field, field);
-            } else if (range == to!string(hyphen)) { 
-                // ignore hyphens
+           try {
+                this.ranges ~= parseRange(range);
+           } catch {
                 continue;
-            } else {
-                // multiple fileds range
-                auto splitRange = findSplit(range, to!string(hyphen));
-
-                // usage of -5 starts the range from 1
-                uint start = (splitRange[0].length == 0) ? 1 : to!uint(splitRange[0]);
-                // usage of 5- ends the range at the end of the line hence the use of uint.max
-                uint end   = (splitRange[2].length == 0) ? uint.max : to!uint(splitRange[2]);
-
-                this.ranges ~= Range(start, end);
-            }   
+           }
         }
 
-        //writefln("ranges %s \tlength: %s", this.ranges, this.ranges.length);
+    }
 
+    Range parseRange(string input) {
+        if (isNumeric(input) && indexOf(input, hyphen) == -1) {
+                // parse the range as a single field
+                uint field = to!uint(input);
+                return Range(field, field);
+            } else if (input == to!string(hyphen)) { 
+                throw new Exception("invalid range");
+            } else {
+                // multiple fileds input
+                auto splitRange = findSplit(input, to!string(hyphen));
+
+                // usage of -5 starts the input from 1
+                uint start = (splitRange[0].length == 0) ? 1 : to!uint(splitRange[0]);
+                // usage of 5- ends the input at the end of the line hence the use of uint.max
+                uint end   = (splitRange[2].length == 0) ? uint.max : to!uint(splitRange[2]);
+
+                return Range(start, end);
+            }
     }
 
 
