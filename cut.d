@@ -100,7 +100,6 @@ class Cut {
 
         char[] buf;
 
-
         while (f.readln(buf)) {
             //writeln(cutLine(buf.filter!(a => a != newLine)));
             writeln(cutLine(buf.strip(' ')));
@@ -129,27 +128,17 @@ class Cut {
         auto fields = splitter(line, delimiter);
         char[] result;
 
-        auto c = 1;
+        uint c = 1;
         foreach (field; fields) {
-            foreach (range; ranges) {
-
-                // stop iterating if the end field has been reached.
-                if (c > range.to) {
-                    continue;
-                }
-
+            if (isInRanges(c)) {
                 // Append to the result the delimiter which has been removed by the splitter.
-                if (c >= range.from && c <= range.to) {
-                    result ~= field ~ delimiter;
-                    break;
-                }
+                result ~= field ~ delimiter;
             }
             c++;
         }
 
         return result;
     }
-
 
     /**
      * Cut lines based on bytes
@@ -161,22 +150,34 @@ class Cut {
     auto cutLineByBytes(char[] line) {
         char[] result;
 
-        //auto c = 1;
-        //foreach (field; line) {
-        //    // stop iterating if the end field has been reached.
-        //    if (c > range.to) {
-        //        break;
-        //    }
-
-        //    // Append to the result the delimiter which has been removed by the splitter.
-        //    if (c >= range.from && c <= range.to) {
-        //        result ~= field;
-        //    }
-
-        //    c++;
-        //}
+        auto c = 1;
+        foreach (field; line) {
+            if (isInRanges(c)) {
+                // Append to the result the field(byte).
+                result ~= field;
+            }
+            c++;
+        }
 
         return result;
+    }
+
+    bool isInRanges(uint c) {
+        bool isInRanges = false;
+
+        foreach (range; ranges) {
+                // stop iterating if the end field has been reached.
+                if (c > range.to) {
+                    continue;
+                }
+
+                if (c >= range.from && c <= range.to) {
+                    isInRanges = true;
+                    break;
+                }
+        }
+
+        return (this.complement) ? !isInRanges : isInRanges;
     }
 
 
