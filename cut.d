@@ -4,6 +4,7 @@ import std.conv;
 import std.file;
 import std.algorithm;
 import std.string;
+import std.c.process;
 
 /**
  * Cut Class
@@ -90,7 +91,7 @@ class Cut {
         }
         else if (!exists(file)) {
             writefln("file %s doesn't exists", file);
-            return;
+            exit(0);
         } else {
             cutFile();
         }
@@ -99,7 +100,6 @@ class Cut {
 
     void cutFile() {
         auto f = File(file, "r");
-        string output;
 
         char[] buf;
 
@@ -140,7 +140,7 @@ class Cut {
         auto fields = splitter(line, delimiter);
         char[] result;
 
-        uint c = 1;
+        auto c = 1U;
         foreach (field; fields) {
             if (isInRanges(c)) {
                 // Append to the result the delimiter which has been removed by the splitter.
@@ -162,7 +162,7 @@ class Cut {
     auto cutLineByBytes(char[] line) {
         char[] result;
 
-        auto c = 1;
+        auto c = 1U;
         foreach (field; line) {
             if (isInRanges(c)) {
                 // Append to the result the field(byte).
@@ -174,6 +174,17 @@ class Cut {
         return result;
     }
 
+
+    /**
+     * Checks if a given integer(unsiged) is in one of the selected ranges.
+     * If operating in complement mode, the boolean in inverted.
+     *
+     * O(n) complexity where n is the number of ranges
+     *
+     * @param   uint    c   the column/field number
+     *
+     * @return  boolean true if it's in the ranges
+     */
     bool isInRanges(uint c) {
         bool isInRanges = false;
 
@@ -205,11 +216,12 @@ class Cut {
     void parseOpts(string[] args) {
         string fields;
         string bytes;
+        char delimiter;
 
         getopt(args,
             std.getopt.config.passThrough,
             "complement", &this.complement,
-            "delimiter|d", &this.delimiter,
+            "delimiter|d", &delimiter,
             "bytes|b", &bytes,
             "fields|f", &fields);
 
@@ -219,14 +231,16 @@ class Cut {
         {
             writeln("usage: cut -b list [file ...]\n cut -f list [-d delim] [file ...]");
             writeln("specify either a byte or a field range ");
-            return;
+            exit(0);
         }
 
         this.mode = (fields.length > 0) ? CutMode.fields : CutMode.bytes;
 
         if(this.mode == CutMode.fields) {
+            this.delimiter = delimiter;
             parseRanges(fields);
         } else {
+            // TODO check if delimiter is passed and throw error or ignore..
             parseRanges(bytes);
         }
 
@@ -235,7 +249,7 @@ class Cut {
             this.file = args[1];
         } else {
             writeln("missing the file option.");
-            return;
+            exit(0);
         }
     }
 
@@ -257,8 +271,9 @@ class Cut {
         foreach (string range;ranges) {
            try {
                 this.ranges ~= parseRange(range);
-           } catch {
-                continue;
+           } catch(Exception e) {
+                writefln("Range error: %s", e.msg);
+                exit(0);
            }
         }
 
@@ -267,18 +282,22 @@ class Cut {
     Range parseRange(string input) {
         if (isNumeric(input) && indexOf(input, hyphen) == -1) {
                 // parse the range as a single field
-                uint field = to!uint(input);
+                auto field = to!uint(input);
+                if (field < 1) throw new Exception("fields/bytes selection starts at 1");
                 return Range(field, field);
             } else if (input == to!string(hyphen)) { 
-                throw new Exception("invalid range");
+                throw new Exception("invalid range - a single hyphen isn't allowed");
             } else {
                 // multiple fileds input
                 auto splitRange = findSplit(input, to!string(hyphen));
 
                 // usage of -5 starts the input from 1
-                uint start = (splitRange[0].length == 0) ? 1 : to!uint(splitRange[0]);
+                auto start = (splitRange[0].length == 0) ? 1 : to!uint(splitRange[0]);
                 // usage of 5- ends the input at the end of the line hence the use of uint.max
-                uint end   = (splitRange[2].length == 0) ? uint.max : to!uint(splitRange[2]);
+                auto end   = (splitRange[2].length == 0) ? uint.max : to!uint(splitRange[2]);
+
+                if (start < 1 || end < 1) throw new Exception("fields/bytes selection starts at 1");
+                if (start > end) throw new Exception("fields/bytes range is invalid (the start must be smaller than the end)");
 
                 return Range(start, end);
             }
