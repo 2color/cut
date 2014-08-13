@@ -30,5 +30,7 @@ tests: CutOptionsParser 	 passed  ✓
 
 ## Performance comparsion to the original cut
 
-`./cut -f 2- -d " " /var/log/install.log > benchmark.log  1.55s user 0.08s system 92% cpu 1.770 total`
-`cut -f 2- -d " " /var/log/install.log > benchmark.log  2.00s user 0.07s system 98% cpu 2.096 total`
+```
+./cut -f 2- -d " " /var/log/install.log > benchmark.log  1.55s user 0.08s system 92% cpu 1.770 total
+cut -f 2- -d " " /var/log/install.log > benchmark.log  2.00s user 0.07s system 98% cpu 2.096 total
+```
