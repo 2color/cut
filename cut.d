@@ -138,7 +138,7 @@ class Cut {
      * @return  boolean true if it's in the ranges
      */
     bool isInRanges(uint c) {
-        bool isInRanges = false;
+        auto isInRanges = false;
 
         foreach (range; options.ranges) {
                 // stop iterating if the end field has been reached.

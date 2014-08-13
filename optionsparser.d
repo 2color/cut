@@ -178,7 +178,7 @@ class CutOptionsParser {
      */
     void parseRanges(string input) {
         auto ranges = splitter(input, comma);
-        bool hasHyphen = false;
+        auto hasHyphen = false;
 
         foreach (string range;ranges) {
            try {
