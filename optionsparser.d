@@ -45,7 +45,6 @@ class CutOptionsParser {
     immutable static char comma = 0x2C;
     immutable static char hyphen = 0x2D;
     immutable static char tab = 0x09;
-    immutable static char newLine = 0x0A;
 
     /**
      * @var file the file to read
